@@ -1,0 +1,50 @@
+{
+    "jugador": {
+        "nombre": "Jason Todd",
+        "salud": 100,
+        "reputacion": 80,
+        "recursos": 3,
+        "inventario": [],
+        "decisiones": [
+            {
+                "nodo": "dificil_inicio",
+                "eleccion": "Comenzar tu campaña contra el crimen"
+            },
+            {
+                "nodo": "dificil_primera_victima",
+                "eleccion": "Dejarlo inconsciente con una advertencia"
+            },
+            {
+                "nodo": "dificil_camino_intermedio",
+                "eleccion": "Mantener este balance"
+            },
+            {
+                "nodo": "dificil_equilibrio_gris",
+                "eleccion": "Enfocarte en el Joker"
+            },
+            {
+                "nodo": "dificil_enfoque_joker",
+                "eleccion": "Ir solo a los muelles"
+            },
+            {
+                "nodo": "dificil_muelles_solo",
+                "eleccion": "Usar sigilo"
+            },
+            {
+                "nodo": "dificil_sigilo_muelles",
+                "eleccion": "Reaccionar rápidamente"
+            },
+            {
+                "nodo": "dificil_reaccion_rapida",
+                "eleccion": "Esperar al arresto"
+            },
+            {
+                "nodo": "dificil_arresto_exitoso",
+                "eleccion": "Celebrar la justicia"
+            }
+        ],
+        "nodo_actual": "dificil_final_redencion"
+    },
+    "dificultad": "dificil"
+}
+
