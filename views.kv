@@ -1,0 +1,326 @@
+#:kivy 2.1.0
+#:import AnimatedHoverButton widgets.AnimatedHoverButton
+#:import TypewriterLabel widgets.TypewriterLabel
+
+<AnimatedHoverButton>:
+    canvas.before:
+        Color:
+            rgba: self.background_color
+        RoundedRectangle:
+            pos: self.pos
+            size: self.size
+            radius: [10]
+    size_hint_y: None
+    height: 50
+    padding: [10, 10]
+
+<TypewriterLabel>:
+    color: 1, 1, 1, 1
+    font_size: '14sp'
+    text_size: self.size
+    halign: 'left'
+    valign: 'top'
+
+# Screen Manager
+<ScreenManager>:
+    MenuScreen:
+        name: 'menu'
+    CharacterSelectScreen:
+        name: 'character_select'
+    DifficultySelectScreen:
+        name: 'difficulty_select'
+    GameScreen:
+        name: 'game'
+
+# Menu Screen
+<MenuScreen>:
+    canvas.before:
+        Color:
+            rgba: 0, 0, 0, 1
+        Rectangle:
+            pos: self.pos
+            size: self.size
+    
+    BoxLayout:
+        orientation: 'vertical'
+        padding: 50
+        spacing: 20
+        
+        Label:
+            text: 'RED HOOD'
+            font_size: '48sp'
+            bold: True
+            color: 0.87, 0.14, 0.19, 1
+            size_hint_y: 0.3
+        
+        Label:
+            text: 'JUEGO DE AVENTURA'
+            font_size: '18sp'
+            color: 1, 1, 1, 1
+            size_hint_y: 0.1
+        
+        BoxLayout:
+            orientation: 'vertical'
+            spacing: 15
+            size_hint_y: 0.5
+            padding: [100, 0]
+            
+            AnimatedHoverButton:
+                text: 'NUEVA PARTIDA'
+                on_release: app.root.current = 'character_select'
+            
+            AnimatedHoverButton:
+                text: 'CARGAR PARTIDA'
+                on_release: app.load_game()
+            
+            AnimatedHoverButton:
+                text: 'SALIR'
+                normal_color: 0.4, 0.1, 0.1, 1
+                hover_color: 0.6, 0.15, 0.15, 1
+                on_release: app.stop()
+
+# Character Select Screen
+<CharacterSelectScreen>:
+    canvas.before:
+        Color:
+            rgba: 0, 0, 0, 1
+        Rectangle:
+            pos: self.pos
+            size: self.size
+    
+    BoxLayout:
+        orientation: 'vertical'
+        padding: 50
+        spacing: 20
+        
+        Label:
+            text: 'SELECCIONA UN PERSONAJE'
+            font_size: '32sp'
+            bold: True
+            color: 0.87, 0.14, 0.19, 1
+            size_hint_y: 0.2
+        
+        GridLayout:
+            cols: 2
+            spacing: 20
+            size_hint_y: 0.6
+            padding: [50, 0]
+            
+            AnimatedHoverButton:
+                text: 'Red Hood\n(Jason Todd)'
+                normal_color: 0.75, 0, 0, 1
+                hover_color: 1, 0.2, 0.2, 1
+                on_release: app.select_character('jason')
+            
+            AnimatedHoverButton:
+                text: 'Nightwing\n(Dick Grayson)'
+                normal_color: 0, 0.32, 0.61, 1
+                hover_color: 0.2, 0.5, 0.8, 1
+                on_release: app.select_character('dick')
+            
+            AnimatedHoverButton:
+                text: 'Red Robin\n(Tim Drake)'
+                normal_color: 0.19, 0.61, 0, 1
+                hover_color: 0.3, 0.8, 0.2, 1
+                on_release: app.select_character('tim')
+            
+            AnimatedHoverButton:
+                text: 'Robin\n(Damian Wayne)'
+                normal_color: 1, 0.84, 0, 1
+                hover_color: 1, 0.92, 0.3, 1
+                on_release: app.select_character('damian')
+        
+        AnimatedHoverButton:
+            text: '← Volver'
+            size_hint_y: 0.1
+            normal_color: 0.2, 0.2, 0.2, 1
+            on_release: app.root.current = 'menu'
+
+# Difficulty Select Screen
+<DifficultySelectScreen>:
+    canvas.before:
+        Color:
+            rgba: 0, 0, 0, 1
+        Rectangle:
+            pos: self.pos
+            size: self.size
+    
+    BoxLayout:
+        orientation: 'vertical'
+        padding: 50
+        spacing: 20
+        
+        Label:
+            text: 'SELECCIONA DIFICULTAD'
+            font_size: '32sp'
+            bold: True
+            color: 0.87, 0.14, 0.19, 1
+            size_hint_y: 0.2
+        
+        GridLayout:
+            cols: 3
+            spacing: 20
+            size_hint_y: 0.6
+            padding: [30, 0]
+            
+            AnimatedHoverButton:
+                text: '🟢 FÁCIL\nEl Segundo Robin\n~10-15 min'
+                normal_color: 0.54, 0.1, 0.1, 1
+                hover_color: 0.7, 0.2, 0.2, 1
+                on_release: app.select_difficulty('facil')
+            
+            AnimatedHoverButton:
+                text: '🟡 NORMAL\nMuerte en la Familia\n~20-30 min'
+                normal_color: 0.7, 0.13, 0.13, 1
+                hover_color: 0.85, 0.25, 0.25, 1
+                on_release: app.select_difficulty('normal')
+            
+            AnimatedHoverButton:
+                text: '🔴 DIFÍCIL\nBajo la Capucha Roja\n~40-60 min'
+                normal_color: 0.87, 0.14, 0.19, 1
+                hover_color: 1, 0.3, 0.3, 1
+                on_release: app.select_difficulty('dificil')
+        
+        AnimatedHoverButton:
+            text: '← Volver'
+            size_hint_y: 0.1
+            normal_color: 0.2, 0.2, 0.2, 1
+            on_release: app.root.current = 'character_select'
+
+# Game Screen
+<GameScreen>:
+    name: 'game'
+    canvas.before:
+        Color:
+            rgba: 0, 0, 0, 1
+        Rectangle:
+            pos: self.pos
+            size: self.size
+    
+    BoxLayout:
+        orientation: 'vertical'
+        spacing: 10
+        padding: 10
+        
+        # Stats panel
+        BoxLayout:
+            size_hint_y: 0.1
+            canvas.before:
+                Color:
+                    rgba: 0.54, 0.1, 0.1, 1
+                RoundedRectangle:
+                    pos: self.pos
+                    size: self.size
+                    radius: [5]
+            
+            Label:
+                id: player_name
+                text: '👤 Jugador'
+                color: 1, 1, 1, 1
+                size_hint_x: 0.2
+            
+            Label:
+                id: salud_label
+                text: '❤️ 100'
+                color: 1, 1, 1, 1
+                size_hint_x: 0.2
+            
+            Label:
+                id: reputacion_label
+                text: '⭐ 50'
+                color: 1, 1, 1, 1
+                size_hint_x: 0.2
+            
+            Label:
+                id: recursos_label
+                text: '💎 3'
+                color: 1, 1, 1, 1
+                size_hint_x: 0.2
+            
+            AnimatedHoverButton:
+                text: '💾'
+                size_hint_x: 0.1
+                on_release: app.save_game()
+            
+            AnimatedHoverButton:
+                text: '🏠'
+                size_hint_x: 0.1
+                normal_color: 0.2, 0.2, 0.2, 1
+                on_release: app.confirm_exit_to_menu()
+        
+        # Main content area
+        BoxLayout:
+            orientation: 'horizontal'
+            spacing: 10
+            size_hint_y: 0.7
+            
+            # Image panel (60%)
+            BoxLayout:
+                size_hint_x: 0.6
+                canvas.before:
+                    Color:
+                        rgba: 0.2, 0.2, 0.2, 1
+                    RoundedRectangle:
+                        pos: self.pos
+                        size: self.size
+                        radius: [10]
+                
+                Image:
+                    id: scene_image
+                    source: ''
+                    allow_stretch: True
+                    keep_ratio: True
+            
+            # Info panel (40%)
+            BoxLayout:
+                orientation: 'vertical'
+                size_hint_x: 0.4
+                spacing: 10
+                
+                # Title
+                Label:
+                    id: scene_title
+                    text: 'Título'
+                    font_size: '20sp'
+                    bold: True
+                    color: 0.87, 0.14, 0.19, 1
+                    size_hint_y: 0.15
+                    text_size: self.size
+                    halign: 'center'
+                    valign: 'middle'
+                
+                # Description with typewriter effect
+                ScrollView:
+                    size_hint_y: 0.85
+                    
+                    TypewriterLabel:
+                        id: scene_description
+                        full_text: ''
+                        typewriter: True
+                        typewriter_interval: 0.05
+                        sound_key: 'type'
+                        size_hint_y: None
+                        height: self.texture_size[1]
+        
+        # Options panel (bottom)
+        BoxLayout:
+            orientation: 'vertical'
+            size_hint_y: 0.2
+            spacing: 5
+            
+            Label:
+                text: '¿QUÉ DECIDES?'
+                font_size: '16sp'
+                bold: True
+                color: 0.87, 0.14, 0.19, 1
+                size_hint_y: 0.2
+            
+            ScrollView:
+                size_hint_y: 0.8
+                
+                GridLayout:
+                    id: options_container
+                    cols: 1
+                    spacing: 5
+                    size_hint_y: None
+                    height: self.minimum_height
