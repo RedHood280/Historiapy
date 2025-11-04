@@ -1,0 +1,450 @@
+#:kivy 2.3.0
+#:import FadeTransition kivy.uix.screenmanager.FadeTransition
+
+# Color definitions
+#:set COLOR_DARK_BG 0.1, 0.1, 0.12, 1
+#:set COLOR_RED_DARK 0.2, 0.05, 0.05, 1
+#:set COLOR_RED_MEDIUM 0.6, 0.1, 0.1, 1
+#:set COLOR_RED_BRIGHT 0.9, 0.2, 0.2, 1
+#:set COLOR_TEXT 0.95, 0.95, 0.95, 1
+#:set COLOR_TEXT_DIM 0.7, 0.7, 0.7, 1
+
+<AnimatedHoverButton>:
+    font_size: '18sp'
+    size_hint: None, None
+    size: 300, 60
+    background_color: COLOR_RED_MEDIUM
+    color: COLOR_TEXT
+    bold: True
+    
+<TypewriterLabel>:
+    color: COLOR_TEXT
+    font_size: '16sp'
+    text_size: self.width, None
+    size_hint_y: None
+    height: self.texture_size[1]
+
+# Fade overlay for transitions
+<FadeOverlay@Widget>:
+    canvas.before:
+        Color:
+            rgba: 0, 0, 0, 0
+        Rectangle:
+            pos: self.pos
+            size: self.size
+
+# Main Menu Screen
+<MainMenuScreen>:
+    name: 'menu'
+    
+    FloatLayout:
+        canvas.before:
+            Color:
+                rgba: COLOR_DARK_BG
+            Rectangle:
+                pos: self.pos
+                size: self.size
+        
+        BoxLayout:
+            orientation: 'vertical'
+            padding: 50
+            spacing: 20
+            
+            Label:
+                text: 'HISTORIAPY: LOS ROBINS'
+                font_size: '48sp'
+                bold: True
+                color: COLOR_RED_BRIGHT
+                size_hint_y: 0.2
+            
+            Label:
+                text: 'Una aventura narrativa de Batman'
+                font_size: '20sp'
+                color: COLOR_TEXT_DIM
+                size_hint_y: 0.1
+            
+            Widget:
+                size_hint_y: 0.1
+            
+            BoxLayout:
+                orientation: 'vertical'
+                spacing: 15
+                size_hint_y: 0.6
+                
+                AnimatedHoverButton:
+                    text: '🎮 NUEVA PARTIDA'
+                    size_hint: 0.5, None
+                    height: 70
+                    pos_hint: {'center_x': 0.5}
+                    on_release: app.root.current = 'character_select'
+                
+                AnimatedHoverButton:
+                    text: '💾 CARGAR PARTIDA'
+                    size_hint: 0.5, None
+                    height: 70
+                    pos_hint: {'center_x': 0.5}
+                    on_release: app.controller.load_game() if app.controller.load_game() else None
+                
+                AnimatedHoverButton:
+                    text: '📖 CRÉDITOS'
+                    size_hint: 0.5, None
+                    height: 70
+                    pos_hint: {'center_x': 0.5}
+                    on_release: app.root.current = 'credits'
+                
+                AnimatedHoverButton:
+                    text: '❌ SALIR'
+                    size_hint: 0.5, None
+                    height: 70
+                    pos_hint: {'center_x': 0.5}
+                    background_color: 0.3, 0.1, 0.1, 1
+                    on_release: app.stop()
+
+# Character Selection Screen
+<CharacterSelectScreen>:
+    name: 'character_select'
+    
+    BoxLayout:
+        orientation: 'vertical'
+        padding: 30
+        spacing: 20
+        canvas.before:
+            Color:
+                rgba: COLOR_DARK_BG
+            Rectangle:
+                pos: self.pos
+                size: self.size
+        
+        Label:
+            text: 'SELECCIONA TU ROBIN'
+            font_size: '36sp'
+            bold: True
+            color: COLOR_RED_BRIGHT
+            size_hint_y: 0.15
+        
+        GridLayout:
+            cols: 2
+            spacing: 20
+            padding: 20
+            size_hint_y: 0.7
+            
+            AnimatedHoverButton:
+                text: '🔴 JASON TODD\nEl Segundo Robin'
+                halign: 'center'
+                valign: 'middle'
+                on_release: root.select_character('jason')
+            
+            AnimatedHoverButton:
+                text: '🔵 DICK GRAYSON\nNightwing'
+                halign: 'center'
+                valign: 'middle'
+                on_release: root.select_character('nightwing')
+            
+            AnimatedHoverButton:
+                text: '🟢 TIM DRAKE\nEl Tercer Robin'
+                halign: 'center'
+                valign: 'middle'
+                on_release: root.select_character('tim')
+            
+            AnimatedHoverButton:
+                text: '⚫ DAMIAN WAYNE\nEl Cuarto Robin'
+                halign: 'center'
+                valign: 'middle'
+                on_release: root.select_character('damian')
+        
+        AnimatedHoverButton:
+            text: '⬅️ VOLVER'
+            size_hint: 0.3, 0.1
+            pos_hint: {'center_x': 0.5}
+            on_release: app.root.current = 'menu'
+
+# Difficulty Selection Screen
+<DifficultySelectScreen>:
+    name: 'difficulty_select'
+    
+    BoxLayout:
+        orientation: 'vertical'
+        padding: 30
+        spacing: 20
+        canvas.before:
+            Color:
+                rgba: COLOR_DARK_BG
+            Rectangle:
+                pos: self.pos
+                size: self.size
+        
+        Label:
+            text: 'SELECCIONA DIFICULTAD'
+            font_size: '36sp'
+            bold: True
+            color: COLOR_RED_BRIGHT
+            size_hint_y: 0.15
+        
+        BoxLayout:
+            orientation: 'vertical'
+            spacing: 20
+            padding: 50
+            size_hint_y: 0.7
+            
+            AnimatedHoverButton:
+                text: '😊 FÁCIL\nHistoria más directa y final feliz'
+                halign: 'center'
+                size_hint: 0.6, None
+                height: 100
+                pos_hint: {'center_x': 0.5}
+                background_color: 0.2, 0.6, 0.2, 1
+                on_release: root.start_game('facil')
+            
+            AnimatedHoverButton:
+                text: '😐 NORMAL\nDecisiones más complejas'
+                halign: 'center'
+                size_hint: 0.6, None
+                height: 100
+                pos_hint: {'center_x': 0.5}
+                background_color: 0.6, 0.6, 0.2, 1
+                on_release: root.start_game('normal')
+            
+            AnimatedHoverButton:
+                text: '😈 DIFÍCIL\nMúltiples finales posibles'
+                halign: 'center'
+                size_hint: 0.6, None
+                height: 100
+                pos_hint: {'center_x': 0.5}
+                background_color: 0.8, 0.2, 0.2, 1
+                on_release: root.start_game('dificil')
+        
+        AnimatedHoverButton:
+            text: '⬅️ VOLVER'
+            size_hint: 0.3, 0.1
+            pos_hint: {'center_x': 0.5}
+            on_release: app.root.current = 'character_select'
+
+# Game Screen - Main gameplay
+<GameScreen>:
+    name: 'game'
+    
+    BoxLayout:
+        orientation: 'vertical'
+        canvas.before:
+            Color:
+                rgba: COLOR_DARK_BG
+            Rectangle:
+                pos: self.pos
+                size: self.size
+        
+        # Top bar with stats
+        BoxLayout:
+            size_hint_y: 0.1
+            padding: 10
+            spacing: 20
+            canvas.before:
+                Color:
+                    rgba: COLOR_RED_DARK
+                Rectangle:
+                    pos: self.pos
+                    size: self.size
+            
+            Label:
+                id: player_name
+                text: 'ROBIN'
+                font_size: '18sp'
+                bold: True
+                color: COLOR_TEXT
+                size_hint_x: 0.2
+            
+            BoxLayout:
+                orientation: 'horizontal'
+                spacing: 10
+                
+                Label:
+                    text: '❤️'
+                    font_size: '20sp'
+                
+                ProgressBar:
+                    id: health_bar
+                    max: 100
+                    value: 100
+                
+                Label:
+                    id: health_text
+                    text: '100'
+                    font_size: '16sp'
+            
+            BoxLayout:
+                orientation: 'horizontal'
+                spacing: 10
+                
+                Label:
+                    text: '⭐'
+                    font_size: '20sp'
+                
+                ProgressBar:
+                    id: reputation_bar
+                    max: 100
+                    value: 50
+                
+                Label:
+                    id: reputation_text
+                    text: '50'
+                    font_size: '16sp'
+            
+            Label:
+                id: resources_text
+                text: '💎 3'
+                font_size: '18sp'
+                color: COLOR_TEXT
+                size_hint_x: 0.15
+            
+            AnimatedHoverButton:
+                text: '💾'
+                size_hint: None, None
+                size: 50, 50
+                on_release: app.controller.save_game()
+            
+            AnimatedHoverButton:
+                text: '📊'
+                size_hint: None, None
+                size: 50, 50
+                on_release: app.root.current = 'stats'
+        
+        # Story content area
+        ScrollView:
+            size_hint_y: 0.6
+            do_scroll_x: False
+            
+            BoxLayout:
+                orientation: 'vertical'
+                padding: 30
+                spacing: 20
+                size_hint_y: None
+                height: self.minimum_height
+                
+                Label:
+                    id: story_title
+                    text: ''
+                    font_size: '28sp'
+                    bold: True
+                    color: COLOR_RED_BRIGHT
+                    size_hint_y: None
+                    height: self.texture_size[1]
+                    text_size: self.width, None
+                
+                TypewriterLabel:
+                    id: story_text
+                    text: ''
+                    padding: 10, 10
+        
+        # Options area
+        BoxLayout:
+            orientation: 'vertical'
+            size_hint_y: 0.3
+            padding: 20
+            spacing: 10
+            
+            AnimatedHoverButton:
+                id: option1
+                text: ''
+                size_hint: 1, 0.25
+                on_release: root.choose_option(0)
+            
+            AnimatedHoverButton:
+                id: option2
+                text: ''
+                size_hint: 1, 0.25
+                on_release: root.choose_option(1)
+            
+            AnimatedHoverButton:
+                id: option3
+                text: ''
+                size_hint: 1, 0.25
+                on_release: root.choose_option(2)
+            
+            AnimatedHoverButton:
+                id: option4
+                text: ''
+                size_hint: 1, 0.25
+                on_release: root.choose_option(3)
+
+# Stats and Inventory Screen
+<StatsScreen>:
+    name: 'stats'
+    
+    BoxLayout:
+        orientation: 'vertical'
+        padding: 30
+        spacing: 20
+        canvas.before:
+            Color:
+                rgba: COLOR_DARK_BG
+            Rectangle:
+                pos: self.pos
+                size: self.size
+        
+        Label:
+            text: '📊 ESTADÍSTICAS E INVENTARIO'
+            font_size: '32sp'
+            bold: True
+            color: COLOR_RED_BRIGHT
+            size_hint_y: 0.1
+        
+        ScrollView:
+            do_scroll_x: False
+            
+            BoxLayout:
+                orientation: 'vertical'
+                padding: 20
+                spacing: 15
+                size_hint_y: None
+                height: self.minimum_height
+                
+                Label:
+                    id: stats_content
+                    text: ''
+                    font_size: '18sp'
+                    color: COLOR_TEXT
+                    size_hint_y: None
+                    height: self.texture_size[1]
+                    text_size: self.width, None
+                    halign: 'left'
+                    valign: 'top'
+        
+        AnimatedHoverButton:
+            text: '⬅️ VOLVER AL JUEGO'
+            size_hint: 0.4, 0.1
+            pos_hint: {'center_x': 0.5}
+            on_release: app.root.current = 'game'
+
+# Credits Screen
+<CreditsScreen>:
+    name: 'credits'
+    
+    BoxLayout:
+        orientation: 'vertical'
+        padding: 30
+        spacing: 20
+        canvas.before:
+            Color:
+                rgba: COLOR_DARK_BG
+            Rectangle:
+                pos: self.pos
+                size: self.size
+        
+        Label:
+            text: '📖 CRÉDITOS'
+            font_size: '32sp'
+            bold: True
+            color: COLOR_RED_BRIGHT
+            size_hint_y: 0.1
+        
+        Label:
+            text: 'HistoriaPy: Los Robins\n\nUna aventura narrativa interactiva\nbasada en el universo de Batman\n\nDesarrollado con Kivy\n\n© 2025'
+            font_size: '20sp'
+            color: COLOR_TEXT
+            halign: 'center'
+            size_hint_y: 0.8
+        
+        AnimatedHoverButton:
+            text: '⬅️ VOLVER'
+            size_hint: 0.3, 0.1
+            pos_hint: {'center_x': 0.5}
+            on_release: app.root.current = 'menu'
