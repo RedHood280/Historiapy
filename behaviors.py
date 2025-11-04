@@ -70,7 +70,7 @@ class RippleBehavior:
             # Center ripple on touch point (convert to widget coordinates)
             local_pos = self.to_widget(*touch_pos)
             ripple = Ellipse(
-                pos=(local_pos[0] - ripple_size/2, local_pos[1] - ripple_size/2),
+                pos=(local_pos[0], local_pos[1]),
                 size=(0, 0)
             )
             

@@ -32,12 +32,14 @@ class TypewriterEffect:
     """
     def __init__(self, text: str, label, interval: float = 0.03, 
                  sound_callback: Optional[Callable] = None,
-                 on_complete: Optional[Callable] = None):
+                 on_complete: Optional[Callable] = None,
+                 sound_interval: int = 3):
         self.text = text
         self.label = label
         self.interval = interval
         self.sound_callback = sound_callback
         self.on_complete = on_complete
+        self.sound_interval = sound_interval
         self.current_index = 0
         self.event = None
         self.cancelled = False
@@ -60,8 +62,8 @@ class TypewriterEffect:
             self.label.text += self.text[self.current_index]
             self.current_index += 1
             
-            # Play typing sound
-            if self.sound_callback and self.current_index % 3 == 0:  # Every 3 chars
+            # Play typing sound at configured interval
+            if self.sound_callback and self.current_index % self.sound_interval == 0:
                 self.sound_callback()
             
             return True
@@ -87,7 +89,8 @@ class TypewriterEffect:
 
 def typewriter_schedule(text: str, label, interval: float = 0.03,
                        sound_callback: Optional[Callable] = None,
-                       on_complete: Optional[Callable] = None) -> TypewriterEffect:
+                       on_complete: Optional[Callable] = None,
+                       sound_interval: int = 3) -> TypewriterEffect:
     """
     Schedule typewriter effect on a label
     
@@ -97,10 +100,11 @@ def typewriter_schedule(text: str, label, interval: float = 0.03,
         interval: Time between characters
         sound_callback: Optional callback for typing sound
         on_complete: Optional callback when complete
+        sound_interval: Number of characters between sound plays (default: 3)
     
     Returns:
         TypewriterEffect instance (can be used to cancel/skip)
     """
-    effect = TypewriterEffect(text, label, interval, sound_callback, on_complete)
+    effect = TypewriterEffect(text, label, interval, sound_callback, on_complete, sound_interval)
     effect.start()
     return effect

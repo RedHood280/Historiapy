@@ -27,9 +27,13 @@ class AnimatedHoverButton(Button, HoverBehavior, RippleBehavior):
     Button with hover animations (scale, color) and ripple effect
     """
     def __init__(self, **kwargs):
-        self.original_background = kwargs.get('background_color', [1, 1, 1, 1])
-        self.hover_background = [1.2, 1.2, 1.2, 1] if self.original_background else [0.8, 0.8, 0.8, 1]
+        # Store original background if provided, otherwise will use default after super().__init__
+        self.original_background = kwargs.get('background_color', None)
         super().__init__(**kwargs)
+        # Set original to actual background if not provided
+        if self.original_background is None:
+            self.original_background = self.background_color[:]
+        self.hover_background = [min(1.0, c * 1.2) for c in self.original_background[:3]] + [self.original_background[3]]
         self.base_size = None
         
     def on_enter(self):
