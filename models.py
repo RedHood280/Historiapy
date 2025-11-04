@@ -10021,6 +10021,100 @@ class JuegoAventuraBase:
         self.historia["damian_dificil_debate_moral"] = NodoHistoria("damian_dificil_debate_moral", "DEBATE MORAL", "Rechazas los métodos de Jason. 'Matar nos hace iguales a ellos,' argumentas. 'No,' responde Jason, 'nos hace efectivos. Bruce vive en un cuento de hadas. Nosotros vivimos en el mundo real.' El debate te obliga a solidificar tus propias creencias. ¿Dónde trazas la línea?", "damian_jason_debate.png")
         self.historia["damian_dificil_debate_moral"].agregar_opcion("Decidir que la línea de no matar es absoluta", "damian_dificil_batalla_final", stat="reputacion", cambio=15)
         self.historia["damian_dificil_debate_moral"].agregar_opcion("Decidir que la línea es... flexible", "damian_dificil_batalla_final", stat="reputacion", cambio=-5)
+    
+    def iniciar_juego(self, personaje: str, dificultad: str):
+        """Initialize a new game"""
+        nombre_mapa = {
+            "jason": "Jason Todd",
+            "nightwing": "Dick Grayson",
+            "grayson": "Dick Grayson",
+            "tim": "Tim Drake",
+            "damian": "Damian Wayne"
+        }
+        self.jugador = Jugador(nombre_mapa.get(personaje, "Robin"))
+        self.dificultad = dificultad
+        
+        # Determine starting node based on character and difficulty
+        nodo_inicio = f"{personaje}_{dificultad}_inicio"
+        if nodo_inicio in self.historia:
+            self.jugador.nodo_actual = nodo_inicio
+            return True
+        return False
+
+    def obtener_nodo_actual(self) -> Optional[NodoHistoria]:
+        """Get current story node"""
+        return self.historia.get(self.jugador.nodo_actual) if self.jugador else None
+
+    def elegir_opcion(self, indice: int) -> bool:
+        """Choose an option and progress the story"""
+        nodo_actual = self.obtener_nodo_actual()
+        if not nodo_actual or indice >= len(nodo_actual.opciones):
+            return False
+
+        opcion = nodo_actual.opciones[indice]
+        
+        # Apply stat changes
+        if opcion["stat"]:
+            self.jugador.modificar_stat(opcion["stat"], opcion["cambio"])
+        if opcion["stat2"]:
+            self.jugador.modificar_stat(opcion["stat2"], opcion["cambio2"])
+        
+        # Add item if any
+        if opcion["item"]:
+            self.jugador.agregar_item(opcion["item"])
+        
+        # Save decision
+        self.jugador.guardar_decision(self.jugador.nodo_actual, opcion["texto"])
+        
+        # Move to next node
+        self.jugador.nodo_actual = opcion["siguiente"]
+        return True
+
+    def guardar_partida(self, archivo: str = "partida_guardada.json") -> bool:
+        """Save game state"""
+        if not self.jugador:
+            return False
+        
+        datos = {
+            "nombre": self.jugador.nombre,
+            "salud": self.jugador.salud,
+            "reputacion": self.jugador.reputacion,
+            "recursos": self.jugador.recursos,
+            "inventario": self.jugador.inventario,
+            "decisiones": self.jugador.decisiones,
+            "nodo_actual": self.jugador.nodo_actual,
+            "dificultad": self.dificultad
+        }
+        
+        try:
+            with open(archivo, 'w', encoding='utf-8') as f:
+                json.dump(datos, f, ensure_ascii=False, indent=2)
+            return True
+        except Exception as e:
+            print(f"Error saving game: {e}")
+            return False
+
+    def cargar_partida(self, archivo: str = "partida_guardada.json") -> bool:
+        """Load game state"""
+        if not os.path.exists(archivo):
+            return False
+        
+        try:
+            with open(archivo, 'r', encoding='utf-8') as f:
+                datos = json.load(f)
+            
+            self.jugador = Jugador(datos["nombre"])
+            self.jugador.salud = datos["salud"]
+            self.jugador.reputacion = datos["reputacion"]
+            self.jugador.recursos = datos["recursos"]
+            self.jugador.inventario = datos["inventario"]
+            self.jugador.decisiones = datos["decisiones"]
+            self.jugador.nodo_actual = datos["nodo_actual"]
+            self.dificultad = datos["dificultad"]
+            return True
+        except Exception as e:
+            print(f"Error loading game: {e}")
+            return False
 
 
 

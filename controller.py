@@ -21,7 +21,16 @@ class GameController:
         
     def start_new_game(self, character: str, difficulty: str):
         """Start a new game with selected character and difficulty"""
-        success = self.game.iniciar_juego(character, difficulty)
+        # Map nightwing to grayson for story nodes
+        char_map = {
+            'nightwing': 'grayson',
+            'jason': 'jason',
+            'tim': 'tim',
+            'damian': 'damian'
+        }
+        story_char = char_map.get(character, character)
+        
+        success = self.game.iniciar_juego(story_char, difficulty)
         if success:
             Logger.info(f"GameController: Started new game - {character} on {difficulty}")
             return True
