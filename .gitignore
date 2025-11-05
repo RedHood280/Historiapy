@@ -1,0 +1,52 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+
+# Virtual environments
+venv/
+ENV/
+env/
+
+# IDEs
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# Kivy
+.kivy/
+*.kv.pyc
+
+# Game saves
+partida_guardada.json
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Assets (optional - uncomment if you don't want to track assets)
+# assets/images/*
+# assets/sounds/*
+
+# Keep asset directories
+!assets/images/.gitkeep
+!assets/sounds/.gitkeep
