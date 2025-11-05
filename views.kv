@@ -1,0 +1,270 @@
+#:kivy 2.0
+# Game Views - Kivy language definitions
+# Uses AnimatedHoverButton and TypewriterLabel for enhanced UI
+
+<AnimatedHoverButton>:
+    font_size: '16sp'
+    bold: True
+    size_hint_y: None
+    height: '50dp'
+    
+<TypewriterLabel>:
+    font_size: '14sp'
+    color: 1, 1, 1, 1
+    text_size: self.width, None
+    size_hint_y: None
+    height: self.texture_size[1]
+    padding: 10, 10
+
+<MenuScreen>:
+    name: 'menu'
+    BoxLayout:
+        orientation: 'vertical'
+        padding: 20
+        spacing: 20
+        canvas.before:
+            Color:
+                rgba: 0, 0, 0, 1
+            Rectangle:
+                pos: self.pos
+                size: self.size
+        
+        Label:
+            text: 'HISTORIA PY'
+            font_size: '32sp'
+            bold: True
+            color: 0.87, 0.15, 0.19, 1
+            size_hint_y: 0.2
+        
+        Label:
+            text: 'Interactive Story Game'
+            font_size: '18sp'
+            color: 0.8, 0.8, 0.8, 1
+            size_hint_y: 0.1
+        
+        BoxLayout:
+            orientation: 'vertical'
+            spacing: 15
+            size_hint_y: 0.5
+            
+            AnimatedHoverButton:
+                text: 'New Game'
+                on_release: app.show_character_select()
+            
+            AnimatedHoverButton:
+                text: 'Load Game'
+                on_release: app.load_game()
+            
+            AnimatedHoverButton:
+                text: 'Credits'
+                on_release: app.show_credits()
+            
+            AnimatedHoverButton:
+                text: 'Exit'
+                on_release: app.stop()
+        
+        Widget:
+            size_hint_y: 0.2
+
+<CharacterSelectScreen>:
+    name: 'character_select'
+    BoxLayout:
+        orientation: 'vertical'
+        padding: 20
+        spacing: 15
+        canvas.before:
+            Color:
+                rgba: 0, 0, 0, 1
+            Rectangle:
+                pos: self.pos
+                size: self.size
+        
+        Label:
+            text: 'SELECT CHARACTER'
+            font_size: '28sp'
+            bold: True
+            color: 0.87, 0.15, 0.19, 1
+            size_hint_y: 0.15
+        
+        BoxLayout:
+            orientation: 'vertical'
+            spacing: 10
+            size_hint_y: 0.7
+            
+            AnimatedHoverButton:
+                text: 'Red Hood (Jason Todd)'
+                on_release: app.select_character('RedHood')
+            
+            AnimatedHoverButton:
+                text: 'Nightwing (Dick Grayson)'
+                on_release: app.select_character('Nightwing')
+            
+            AnimatedHoverButton:
+                text: 'Red Robin (Tim Drake)'
+                on_release: app.select_character('TimDrake')
+        
+        AnimatedHoverButton:
+            text: 'Back'
+            size_hint_y: 0.15
+            on_release: app.show_menu()
+
+<DifficultySelectScreen>:
+    name: 'difficulty_select'
+    BoxLayout:
+        orientation: 'vertical'
+        padding: 20
+        spacing: 15
+        canvas.before:
+            Color:
+                rgba: 0, 0, 0, 1
+            Rectangle:
+                pos: self.pos
+                size: self.size
+        
+        Label:
+            text: 'SELECT DIFFICULTY'
+            font_size: '28sp'
+            bold: True
+            color: 0.87, 0.15, 0.19, 1
+            size_hint_y: 0.15
+        
+        BoxLayout:
+            orientation: 'vertical'
+            spacing: 10
+            size_hint_y: 0.7
+            
+            AnimatedHoverButton:
+                text: 'Easy - Straightforward Story'
+                on_release: app.start_game('easy')
+            
+            AnimatedHoverButton:
+                text: 'Medium - More Choices'
+                on_release: app.start_game('medium')
+            
+            AnimatedHoverButton:
+                text: 'Hard - Complex Branching'
+                on_release: app.start_game('hard')
+        
+        AnimatedHoverButton:
+            text: 'Back'
+            size_hint_y: 0.15
+            on_release: app.show_character_select()
+
+<GameScreen>:
+    name: 'game'
+    BoxLayout:
+        orientation: 'vertical'
+        padding: 10
+        spacing: 10
+        canvas.before:
+            Color:
+                rgba: 0, 0, 0, 1
+            Rectangle:
+                pos: self.pos
+                size: self.size
+        
+        # Top bar with stats
+        BoxLayout:
+            orientation: 'horizontal'
+            size_hint_y: 0.08
+            spacing: 10
+            
+            Label:
+                id: stats_label
+                text: '❤️ Health: 100/100  ⭐ Reputation: 50/100  💎 Resources: 3'
+                font_size: '14sp'
+                color: 1, 1, 1, 1
+                size_hint_x: 0.7
+            
+            AnimatedHoverButton:
+                text: 'Save'
+                size_hint_x: 0.15
+                on_release: app.save_game()
+            
+            AnimatedHoverButton:
+                text: 'Menu'
+                size_hint_x: 0.15
+                on_release: app.confirm_menu()
+        
+        # Scene image
+        BoxLayout:
+            orientation: 'vertical'
+            size_hint_y: 0.35
+            
+            Image:
+                id: scene_image
+                allow_stretch: True
+                keep_ratio: True
+        
+        # Story title
+        Label:
+            id: title_label
+            text: 'Story Title'
+            font_size: '20sp'
+            bold: True
+            color: 0.87, 0.15, 0.19, 1
+            size_hint_y: 0.08
+        
+        # Story text with typewriter effect
+        ScrollView:
+            size_hint_y: 0.25
+            
+            TypewriterLabel:
+                id: story_label
+                text: 'Story text goes here...'
+                markup: True
+        
+        # Inventory display
+        Label:
+            id: inventory_label
+            text: 'Inventory: Empty'
+            font_size: '12sp'
+            color: 0.8, 0.8, 0.8, 1
+            size_hint_y: 0.06
+        
+        # Options
+        ScrollView:
+            size_hint_y: 0.18
+            
+            BoxLayout:
+                id: options_box
+                orientation: 'vertical'
+                spacing: 5
+                size_hint_y: None
+                height: self.minimum_height
+
+<CreditsScreen>:
+    name: 'credits'
+    BoxLayout:
+        orientation: 'vertical'
+        padding: 20
+        spacing: 15
+        canvas.before:
+            Color:
+                rgba: 0, 0, 0, 1
+            Rectangle:
+                pos: self.pos
+                size: self.size
+        
+        Label:
+            text: 'CREDITS'
+            font_size: '28sp'
+            bold: True
+            color: 0.87, 0.15, 0.19, 1
+            size_hint_y: 0.15
+        
+        ScrollView:
+            size_hint_y: 0.7
+            
+            Label:
+                text: 'HISTORIA PY\\n\\nAn Interactive Story Game\\n\\nFeatures:\\n• 3 Characters with unique stories\\n• 3 Difficulty levels\\n• Branching narratives\\n• Stats and inventory system\\n• Multiple endings\\n• Save/Load functionality\\n\\nTechnology:\\n• Python\\n• Kivy Framework\\n• MVC Architecture\\n\\nVisual Enhancements:\\n• Animated hover buttons\\n• Typewriter text effect\\n• Smooth transitions\\n• Resource caching\\n\\nThank you for playing!'
+                font_size: '14sp'
+                color: 1, 1, 1, 1
+                size_hint_y: None
+                height: self.texture_size[1]
+                text_size: self.width - 40, None
+        
+        AnimatedHoverButton:
+            text: 'Back'
+            size_hint_y: 0.15
+            on_release: app.show_menu()
