@@ -92,12 +92,13 @@ class GameModel:
     
     def _inicializar_personajes(self):
         """Crear los personajes del juego"""
-        # Import existing character initialization from Robins.py
+        # Import existing character initialization from game_data.py
         try:
-            from Robins import JuegoAventuraBase
+            from game_data import JuegoAventuraBase
             temp_game = JuegoAventuraBase()
             self.personajes = temp_game.personajes
-        except:
+        except Exception as e:
+            print(f"Warning loading personajes: {e}")
             # Fallback: create basic characters
             batman = Personaje("Batman", "La justicia de Gotham requiere más que fuerza bruta.")
             batman.dialogos = {
@@ -118,13 +119,13 @@ class GameModel:
     
     def _inicializar_historias(self):
         """Cargar todas las historias del juego"""
-        # Import existing stories from Robins.py
+        # Import existing stories from game_data.py
         try:
-            from Robins import JuegoAventuraBase
+            from game_data import JuegoAventuraBase
             temp_game = JuegoAventuraBase()
             self.historia = temp_game.historia
         except Exception as e:
-            print(f"Error loading stories: {e}")
+            print(f"Warning loading stories: {e}")
             # Create a minimal fallback story
             self._crear_historia_minima()
     
