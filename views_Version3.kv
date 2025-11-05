@@ -1,0 +1,411 @@
+#:kivy 2.1.0
+#:import FadeTransition kivy.uix.screenmanager.FadeTransition
+
+<AnimatedHoverButton>:
+    # Generic visual for animated buttons (uses widget properties from Python class)
+    size_hint_y: None
+    height: dp(44)
+    canvas.before:
+        Color:
+            rgba: self.bg_color if hasattr(self, 'bg_color') else (0.18,0.18,0.18,1)
+        RoundedRectangle:
+            pos: self.x, self.y
+            size: self.width, self.height
+            radius: [8,]
+    halign: 'center'
+    valign: 'middle'
+    text_size: self.width - dp(16), None
+    padding: dp(8), dp(8)
+
+<TypewriterLabel>:
+    # font and color defaults
+    color: 1,1,1,1
+    size_hint_y: None
+    text_size: self.width, None
+
+<StatBar@BoxLayout>:
+    label_text: ''
+    value: 0
+    max_value: 100
+    orientation: 'vertical'
+    size_hint_y: None
+    height: '64dp'
+    Label:
+        text: root.label_text
+        size_hint_y: 0.4
+        color: 1,1,1,1
+        font_size: '14sp'
+    ProgressBar:
+        max: root.max_value
+        value: root.value
+        size_hint_y: 0.6
+        canvas.before:
+            Color:
+                rgba: 0.12,0.12,0.12,1
+            RoundedRectangle:
+                pos: self.pos
+                size: self.size
+                radius: [6,]
+
+ScreenManager:
+    id: screen_manager
+    transition: FadeTransition(duration=0.35)
+
+    LoadingScreen:
+        name: 'loading'
+    MainMenuScreen:
+        name: 'menu'
+    GameScreen:
+        name: 'game'
+    ProfileScreen:
+        name: 'profile'
+    SaveLoadScreen:
+        name: 'saveload'
+    JournalScreen:
+        name: 'journal'
+
+<LoadingScreen>:
+    BoxLayout:
+        orientation: 'vertical'
+        spacing: dp(12)
+        padding: dp(20)
+        Label:
+            text: 'Cargando Historiapy...'
+            font_size: '24sp'
+            color: 1,1,1,1
+        ProgressBar:
+            id: load_bar
+            max: 100
+            value: 100
+        Label:
+            text: 'Preparado.'
+            font_size: '12sp'
+            color: 1,1,1,1
+    on_enter:
+        app.controller.preload_images()
+        root.manager.current = 'menu'
+
+<MainMenuScreen>:
+    BoxLayout:
+        orientation: 'vertical'
+        padding: dp(12)
+        spacing: dp(12)
+        canvas.before:
+            Color:
+                rgba: 0.06,0.06,0.06,1
+            Rectangle:
+                pos: self.pos
+                size: self.size
+        BoxLayout:
+            size_hint_y: None
+            height: dp(60)
+            spacing: dp(8)
+            Label:
+                text: 'Historiapy'
+                font_size: '28sp'
+                color: 1,1,1,1
+            AnimatedHoverButton:
+                text: 'Continuar'
+                size_hint_x: None
+                width: dp(120)
+                on_release:
+                    root.manager.current = 'saveload'
+            AnimatedHoverButton:
+                text: 'Configuración'
+                size_hint_x: None
+                width: dp(140)
+                on_release:
+                    root.manager.current = 'profile'
+        BoxLayout:
+            spacing: dp(12)
+            BoxLayout:
+                orientation: 'vertical'
+                size_hint_x: 0.5
+                padding: dp(8)
+                spacing: dp(8)
+                Label:
+                    text: 'Selecciona personaje'
+                    color: 1,1,1,1
+                GridLayout:
+                    cols: 3
+                    spacing: dp(8)
+                    size_hint_y: None
+                    height: dp(120)
+                    AnimatedHoverButton:
+                        text: 'Jason'
+                        bg_color: 0.86,0.08,0.24,1
+                        hover_color: 0.95,0.16,0.30,1
+                        on_release:
+                            app.controller.start_new_game('jason', 'easy')
+                            root.manager.current = 'game'
+                    AnimatedHoverButton:
+                        text: 'Dick'
+                        bg_color: 0.25,0.41,0.88,1
+                        hover_color: 0.35,0.53,0.95,1
+                        on_release:
+                            app.controller.start_new_game('dick', 'easy')
+                            root.manager.current = 'game'
+                    AnimatedHoverButton:
+                        text: 'Tim'
+                        bg_color: 0.18,0.31,0.31,1
+                        hover_color: 0.28,0.41,0.41,1
+                        on_release:
+                            app.controller.start_new_game('tim', 'easy')
+                            root.manager.current = 'game'
+                Label:
+                    text: 'Dificultad (preview)'
+                    color: 1,1,1,1
+                BoxLayout:
+                    spacing: dp(8)
+                    size_hint_y: None
+                    height: dp(40)
+                    AnimatedHoverButton:
+                        text: 'Fácil'
+                        on_release:
+                            app.controller.start_new_game(app.model.session.get('player','jason'), 'easy')
+                            root.manager.current = 'game'
+                    AnimatedHoverButton:
+                        text: 'Normal'
+                        on_release:
+                            app.controller.start_new_game(app.model.session.get('player','jason'), 'normal')
+                            root.manager.current = 'game'
+                    AnimatedHoverButton:
+                        text: 'Difícil'
+                        on_release:
+                            app.controller.start_new_game(app.model.session.get('player','jason'), 'hard')
+                            root.manager.current = 'game'
+            BoxLayout:
+                orientation: 'vertical'
+                padding: dp(8)
+                spacing: dp(8)
+                Label:
+                    text: 'Resumen'
+                    color: 1,1,1,1
+                Label:
+                    id: summary
+                    text: 'Jugadas: 0\nProgreso: {}%'.format(app.controller.get_progress())
+                    color: 1,1,1,1
+                AnimatedHoverButton:
+                    text: 'Ver diario'
+                    on_release: root.manager.current = 'journal'
+
+<GameScreen>:
+    BoxLayout:
+        orientation: 'vertical'
+        canvas.before:
+            Color:
+                rgba: 0.04,0.04,0.06,1
+            Rectangle:
+                pos: self.pos
+                size: self.size
+        BoxLayout:
+            size_hint_y: None
+            height: dp(48)
+            padding: dp(8)
+            spacing: dp(8)
+            Label:
+                id: header_player
+                text: 'Jugador: ' + (app.model.session.get('player') or 'N/A')
+                color: 1,1,1,1
+            Label:
+                id: header_diff
+                text: 'Dificultad: ' + (app.model.session.get('difficulty') or 'N/A')
+                color: 1,1,1,1
+            AnimatedHoverButton:
+                text: 'Guardar'
+                size_hint_x: None
+                width: dp(90)
+                on_release:
+                    app.controller.save_game()
+            AnimatedHoverButton:
+                text: 'Salir'
+                size_hint_x: None
+                width: dp(90)
+                on_release:
+                    app.stop()
+        BoxLayout:
+            id: main_area
+            orientation: 'horizontal'
+            padding: dp(8)
+            spacing: dp(8)
+            BoxLayout:
+                id: left_panel
+                size_hint_x: 0.6
+                canvas.before:
+                    Color:
+                        rgba: 0,0,0,1
+                    Rectangle:
+                        pos: self.pos
+                        size: self.size
+                Image:
+                    id: scene_image
+                    allow_stretch: True
+                    keep_ratio: True
+                    source: ''
+            BoxLayout:
+                id: right_panel
+                orientation: 'vertical'
+                size_hint_x: 0.4
+                padding: dp(8)
+                spacing: dp(8)
+                Label:
+                    id: char_name
+                    text: app.model.characters.get(app.model.session.get('player'),'').get('name','Selecciona jugador')
+                    font_size: '18sp'
+                    color: 1,1,1,1
+                StatBar:
+                    id: health_bar
+                    label_text: 'Salud'
+                    value: app.model.session.get('stats',{}).get('health', 0)
+                    max_value: 200
+                StatBar:
+                    id: rep_bar
+                    label_text: 'Reputación'
+                    value: app.model.session.get('stats',{}).get('reputation', 0)
+                    max_value: 200
+                StatBar:
+                    id: res_bar
+                    label_text: 'Recursos'
+                    value: app.model.session.get('stats',{}).get('resources', 0)
+                    max_value: 200
+                Label:
+                    text: 'Inventario'
+                    size_hint_y: None
+                    height: dp(24)
+                    color: 1,1,1,1
+                ScrollView:
+                    size_hint_y: None
+                    height: dp(120)
+                    GridLayout:
+                        id: inventory_grid
+                        cols: 1
+                        size_hint_y: None
+                        height: self.minimum_height
+                        Label:
+                            text: ', '.join(app.model.session.get('inventory', [])) or 'Vacío'
+                            color: 1,1,1,1
+        BoxLayout:
+            orientation: 'vertical'
+            size_hint_y: None
+            height: dp(220)
+            padding: dp(8)
+            spacing: dp(8)
+            ScrollView:
+                id: desc_scroll
+                TypewriterLabel:
+                    id: desc_label
+                    size_hint_y: None
+                    height: self.texture_size[1]
+                    text_size: self.width, None
+                    full_text: app.model.get_current_node().get('text') if app.model.get_current_node() else ''
+                    typewriter: True
+                    speed: 0.01
+                    on_complete: lambda: None
+                    color: 1,1,1,1
+            GridLayout:
+                id: options_grid
+                cols: 4
+                spacing: dp(8)
+                size_hint_y: None
+                height: dp(64)
+    on_enter:
+        node = app.model.get_current_node()
+        if node:
+            scene_image = self.ids.scene_image
+            scene_image.source = node.get('image') or ''
+            app.controller.play_sound('transition')
+        options_grid = self.ids.options_grid
+        options_grid.clear_widgets()
+        node = app.model.get_current_node()
+        if node:
+            choices = node.get('choices', [])
+            for i, c in enumerate(choices):
+                btn = AnimatedHoverButton(text=c.get('text', '...'),
+                                          on_release=lambda btn, idx=i: app.controller.choose_option(idx, ui_callback=root.update_after_choice))
+                options_grid.add_widget(btn)
+        self.ids.health_bar.value = app.model.session.get('stats',{}).get('health', 0)
+        self.ids.rep_bar.value = app.model.session.get('stats',{}).get('reputation', 0)
+        self.ids.res_bar.value = app.model.session.get('stats',{}).get('resources', 0)
+        self.ids.inventory_grid.children[0].text = ', '.join(app.model.session.get('inventory', [])) or 'Vacío'
+    def update_after_choice(self, choice, node):
+        if node:
+            # play a small animation on scene image for cross-fade feel
+            try:
+                app.controller.play_transition_animation(self.ids.scene_image)
+            except Exception:
+                pass
+            self.ids.scene_image.source = node.get('image') or ''
+            self.ids.desc_label.full_text = node.get('text', '')
+            self.ids.desc_label.typewriter = True
+            self.ids.options_grid.clear_widgets()
+            for i, c in enumerate(node.get('choices', [])):
+                btn = AnimatedHoverButton(text=c.get('text', '...'),
+                                          on_release=lambda btn, idx=i: app.controller.choose_option(idx, ui_callback=root.update_after_choice))
+                self.ids.options_grid.add_widget(btn)
+        self.ids.health_bar.value = app.model.session.get('stats',{}).get('health', 0)
+        self.ids.rep_bar.value = app.model.session.get('stats',{}).get('reputation', 0)
+        self.ids.res_bar.value = app.model.session.get('stats',{}).get('resources', 0)
+        self.ids.inventory_grid.children[0].text = ', '.join(app.model.session.get('inventory', [])) or 'Vacío'
+
+<ProfileScreen>:
+    BoxLayout:
+        orientation: 'vertical'
+        padding: dp(8)
+        spacing: dp(8)
+        Label:
+            text: 'Perfil del personaje'
+            color: 1,1,1,1
+        Label:
+            text: 'Inventario: ' + (', '.join(app.model.session.get('inventory', [])) or 'Vacío')
+            color: 1,1,1,1
+        AnimatedHoverButton:
+            text: 'Volver'
+            on_release: root.manager.current = 'menu'
+
+<SaveLoadScreen>:
+    BoxLayout:
+        orientation: 'vertical'
+        padding: dp(8)
+        spacing: dp(8)
+        Label:
+            text: 'Guardar/Cargar Partida'
+            color: 1,1,1,1
+        BoxLayout:
+            size_hint_y: None
+            height: dp(36)
+            TextInput:
+                id: save_name
+                hint_text: 'Nombre del archivo (opcional)'
+            AnimatedHoverButton:
+                text: 'Guardar'
+                on_release:
+                    app.controller.save_game(path=save_name.text if save_name.text else None)
+        AnimatedHoverButton:
+            text: 'Cargar autosave'
+            on_release:
+                app.controller.load_game()
+                root.manager.current = 'game'
+        AnimatedHoverButton:
+            text: 'Volver'
+            on_release:
+                root.manager.current = 'menu'
+
+<JournalScreen>:
+    BoxLayout:
+        orientation: 'vertical'
+        padding: dp(8)
+        spacing: dp(8)
+        Label:
+            text: 'Diario'
+            color: 1,1,1,1
+        ScrollView:
+            GridLayout:
+                cols: 1
+                size_hint_y: None
+                height: self.minimum_height
+                Label:
+                    text: '\\n'.join([f\"{h['node']}: {h['choice']}\" for h in app.model.session.get('history', [])]) or 'No hay entradas'
+                    color: 1,1,1,1
+        AnimatedHoverButton:
+            text: 'Volver'
+            on_release: root.manager.current = 'menu'
