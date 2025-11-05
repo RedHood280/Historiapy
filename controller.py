@@ -15,9 +15,16 @@ class GameController:
     Public API must remain compatible for existing code.
     """
     
-    def __init__(self):
+    def __init__(self, enable_resources=True):
         self.model = GameModel()
-        self.resource_manager = get_resource_manager()
+        # Check if we're in headless mode
+        import os
+        if not enable_resources or os.environ.get('KIVY_NO_ARGS') == '1':
+            # Create resource manager with textures disabled for headless testing
+            from resources import ResourceManager
+            self.resource_manager = ResourceManager(enable_textures=False)
+        else:
+            self.resource_manager = get_resource_manager()
         self.view = None  # Will be set by the view
         self._transition_in_progress = False
     
@@ -43,23 +50,29 @@ class GameController:
     
     def _preload_assets(self):
         """Preload common game assets"""
-        # Preload some common images
-        common_images = [
-            "crime_alley.png",
-            "batman_chase.png",
-            "jason_valiente.png",
-            "robin_training.png",
-            "bludhaven.png",
-            "batcave.png"
-        ]
-        self.resource_manager.preload_images(common_images)
+        try:
+            # Preload some common images
+            common_images = [
+                "crime_alley.png",
+                "batman_chase.png",
+                "jason_valiente.png",
+                "robin_training.png",
+                "bludhaven.png",
+                "batcave.png"
+            ]
+            self.resource_manager.preload_images(common_images)
+        except Exception as e:
+            print(f"Could not preload images (headless mode?): {e}")
         
-        # Preload common sounds
-        common_sounds = [
-            "click.wav",
-            "type.wav"
-        ]
-        self.resource_manager.preload_sounds(common_sounds)
+        try:
+            # Preload common sounds
+            common_sounds = [
+                "click.wav",
+                "type.wav"
+            ]
+            self.resource_manager.preload_sounds(common_sounds)
+        except Exception as e:
+            print(f"Could not preload sounds: {e}")
     
     @debounce(wait_time=0.5)
     def choose_option(self, option_index):

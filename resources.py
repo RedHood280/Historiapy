@@ -12,11 +12,12 @@ from io import BytesIO
 class ResourceManager:
     """Manages game resources (images, sounds) with caching and preloading"""
     
-    def __init__(self):
+    def __init__(self, enable_textures=True):
         self.image_cache = {}
         self.sound_cache = {}
         self.texture_cache = {}
         self._placeholder_texture = None
+        self._enable_textures = enable_textures  # Can be disabled for headless testing
     
     def get_texture(self, image_path, width=400, height=300):
         """
@@ -28,8 +29,12 @@ class ResourceManager:
             height: Desired height
         
         Returns:
-            Kivy Texture object
+            Kivy Texture object or None if textures disabled
         """
+        # Return None if textures are disabled (headless mode)
+        if not self._enable_textures:
+            return None
+        
         cache_key = f"{image_path}_{width}_{height}"
         
         # Return cached texture if available
@@ -58,24 +63,37 @@ class ResourceManager:
                 print(f"Loaded texture: {image_path}")
             except Exception as e:
                 print(f"Error loading image {full_path}: {e}")
-                texture = self._get_placeholder_texture(width, height)
+                try:
+                    texture = self._get_placeholder_texture(width, height)
+                except Exception as e2:
+                    print(f"Cannot create placeholder: {e2}")
+                    texture = None
         else:
             print(f"Image not found: {full_path}, using placeholder")
-            texture = self._get_placeholder_texture(width, height)
+            try:
+                texture = self._get_placeholder_texture(width, height)
+            except Exception as e:
+                print(f"Cannot create placeholder: {e}")
+                texture = None
         
         return texture
     
     def _get_placeholder_texture(self, width=400, height=300):
         """Create a placeholder texture for missing images"""
         if self._placeholder_texture is None:
-            # Create a simple colored texture as placeholder
-            size = (width, height)
-            # Create RGB data (dark gray)
-            data = bytes([30, 30, 30] * (width * height))
-            
-            texture = Texture.create(size=size)
-            texture.blit_buffer(data, colorfmt='rgb', bufferfmt='ubyte')
-            self._placeholder_texture = texture
+            try:
+                # Create a simple colored texture as placeholder
+                size = (width, height)
+                # Create RGB data (dark gray)
+                data = bytes([30, 30, 30] * (width * height))
+                
+                texture = Texture.create(size=size)
+                texture.blit_buffer(data, colorfmt='rgb', bufferfmt='ubyte')
+                self._placeholder_texture = texture
+            except Exception as e:
+                print(f"Warning: Cannot create placeholder texture (headless?): {e}")
+                # Return None in headless mode - the UI will handle it
+                return None
         
         return self._placeholder_texture
     
@@ -91,8 +109,9 @@ class ResourceManager:
         loaded = 0
         for image_path in image_paths:
             try:
-                self.get_texture(image_path, width, height)
-                loaded += 1
+                texture = self.get_texture(image_path, width, height)
+                if texture is not None:
+                    loaded += 1
             except Exception as e:
                 print(f"Error preloading {image_path}: {e}")
         
